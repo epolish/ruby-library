@@ -7,13 +7,13 @@ class ValidationError < ArgumentError; end
 module Validator
   VALID_EMAIL_REGEX = /\A[\w+\-.]+@[a-z\d\-]+(\.[a-z]+)*\.[a-z]+\z/i
 
-  def email_rule value
+  def email_rule(value)
     unless value =~ VALID_EMAIL_REGEX
       raise ValidationError, 'Email is not valid'
     end 
   end
 
-  def date_rule value
+  def date_rule(value)
     begin
       Date.parse(value)
     rescue ArgumentError
@@ -21,7 +21,7 @@ module Validator
     end
   end
 
-  def validate rules={}
+  def validate(rules={})
     rules.map do |key, value|
       begin
         self.send key, value
