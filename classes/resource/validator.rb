@@ -24,7 +24,7 @@ module Validator
   def validate(rules={})
     rules.map do |key, value|
       begin
-        self.send key, value
+        self.public_send key, value
       rescue NoMethodError
         raise ArgumentError, "Rule <#{key}> is not supported"
       end

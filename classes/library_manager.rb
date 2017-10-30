@@ -78,7 +78,7 @@ class LibraryManager < Application
   def get_most_popular(options={})
     if options[:key]
       data = @library.orders.each_with_object(Hash.new(0)) do |order, hash| 
-        hash[order.send(options[:key])] += 1
+        hash[order.public_send(options[:key])] += 1
       end
 
       if !options[:limit]
