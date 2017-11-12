@@ -8,15 +8,13 @@ class Reader < Application
 
   attr_accessor :name, :email, :city, :street, :house
 
-  def initialize(options={})
-    self.validate(
-      email_rule: options[:email] || 'default@mail.com'
-    )
+  def initialize(name=nil, email=nil, city=nil, street=nil, house=nil)
+    self.validate(email_rule: email || 'default@mail.com')
 
-    @name = options[:name]
-    @email = options[:email]
-    @city = options[:city]
-    @street = options[:street]
-    @house = options[:house]
+    @name = name
+    @city = city
+    @email = email
+    @house = house
+    @street = street
   end
 end

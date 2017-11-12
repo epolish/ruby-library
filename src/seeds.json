@@ -10,12 +10,12 @@
     {"name": "Author 3", "biography": ["Book 7", "Book 8", "Book 9"]}
   ],
   "orders": [
-    {"book": "Book 1", "reader": "Reader 2", "date": "2017-10-25"},
-    {"book": "Book 1", "reader": "Reader 1", "date": "2017-10-26"},
-    {"book": "Book 4", "reader": "Reader 2", "date": "2017-10-27"},
-    {"book": "Book 7", "reader": "Reader 2", "date": "2017-10-28"},
-    {"book": "Book 4", "reader": "Reader 1", "date": "2017-10-26"},
-    {"book": "Book 1", "reader": "Reader 1", "date": "2017-10-29"},
-    {"book": "Book 2", "reader": "Reader 1", "date": "2017-10-30"}
+    {"book_title": "Book 1", "reader_name": "Reader 2", "date": "2017-10-25"},
+    {"book_title": "Book 1", "reader_name": "Reader 1", "date": "2017-10-26"},
+    {"book_title": "Book 4", "reader_name": "Reader 2", "date": "2017-10-27"},
+    {"book_title": "Book 7", "reader_name": "Reader 2", "date": "2017-10-28"},
+    {"book_title": "Book 4", "reader_name": "Reader 1", "date": "2017-10-26"},
+    {"book_title": "Book 1", "reader_name": "Reader 1", "date": "2017-10-29"},
+    {"book_title": "Book 2", "reader_name": "Reader 1", "date": "2017-10-30"}
   ]
 }

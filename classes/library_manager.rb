@@ -15,22 +15,85 @@ class LibraryManager < Application
 
   attr_accessor :library
 
-  def initialize(library)
+  def initialize(library=nil)
     @library = library
   end
 
   def load_data(data=nil)
     data ||= self.read
 
-    data['readers'].each do |value|
-      @library.readers.push Reader.new value.symbolize_keys
-    end
+    load_readers data['readers']
+    load_authors_with_books data['authors']
+    load_orders data['orders']
+  end
 
-    data['authors'].each do |value|
-      author = Author.new name: value['name']
+  def save_data
+    self.write({
+      readers: readers_to_hash_array,
+      authors: authors_to_hash_array,
+      orders: orders_to_hash_array
+    })
+  end
+  
+  def get_most_popular(options={})
+    if options[:key]
+      get_order_most_repeated_sorted_entities(
+        get_order_entities_with_number_of_repetitions(options[:key]),
+        options[:limit]
+      )
+    end
+  end
+
+  private
+
+  def get_order_most_repeated_sorted_entities(entities, limit=nil)
+    result_entities = entities
+      .sort_by{|_, value| -value}
+      .first(limit || 1)
+      .map{|key, value| {item: key, count: value}}
+
+    limit ? result_entities : result_entities.first[:item]
+  end
+
+  def get_order_entities_with_number_of_repetitions(entity_key)
+    @library.orders.each_with_object(Hash.new(0)) do |order, hash|
+      entity_value = case entity_key
+        when 'date' then order.date
+        when 'book' then order.book
+        when 'reader' then order.reader
+        else raise KeyError, "undefined key <#{entity_key}>"
+      end
+
+      hash[entity_value] += 1
+    end
+  end
+
+  def load_orders(source)
+    source.each do |value|
+      @library.orders.push Order.new \
+        @library.books.select {|book| book.title == value['book_title']}.first, 
+        @library.readers.select {|reader| reader.name == value['reader_name']}.first, 
+        value['date']
+    end
+  end
+
+  def load_readers(source)
+    source.each do |value|
+      @library.readers.push Reader.new \
+        value['name'],
+        value['email'],
+        value['city'],
+        value['street'],
+        value['house']
+    end
+  end
+
+  def load_authors_with_books(source)
+    source.each do |value|
+      author = Author.new value['name']
       
-      value['biography'].each do |book_name|
-        book = Book.new title: book_name, author: author
+      value['biography'].each do |book_title|
+        book = Book.new book_title, author
 
         author.biography.push book
         @library.books.push book
@@ -38,54 +101,48 @@ class LibraryManager < Application
 
       @library.authors.push author
     end
-
-    data['orders'].each do |value|
-      @library.orders.push Order.new \
-        book: @library.books.select {|book| book.title == value['book']}.first, 
-        reader: @library.readers.select {|reader| reader.name == value['reader']}.first, 
-        date: value['date']
-    end
   end
 
-  def save_data
-    data = {readers: [], authors: [], orders: []}
+  def authors_to_hash_array
+    collection = []
+
+    @library.authors.each do |author|
+      collection.push({
+        name: author.name,
+        biography: author.biography.map {|book| book.title}
+      })
+    end
+
+    collection
+  end
+
+  def orders_to_hash_array
+    collection = []
+
+    @library.orders.each do |order|
+      collection.push({
+        book: order.book.title,
+        reader: order.reader.name,
+        date: order.date
+      })
+    end
+
+    collection
+  end
+
+  def readers_to_hash_array
+    collection = []
 
     @library.readers.each do |reader|
-      data[:readers].push \
+      collection.push({
         name: reader.name,
         email: reader.email,
         city: reader.city,
         street: reader.street,
         house: reader.house
+      })
     end
 
-    @library.authors.each do |author|
-      data[:authors].push \
-        name: author.name,
-        biography: author.biography.map {|book| book.title}
-    end
-    
-    @library.orders.each do |order|
-      data[:orders].push \
-        book: order.book.title,
-        reader: order.reader.name,
-        date: order.date
-    end
-
-    self.write data
-  end
-  
-  def get_most_popular(options={})
-    if options[:key]
-      data = @library.orders.each_with_object(Hash.new(0)) do |order, hash| 
-        hash[order.public_send(options[:key])] += 1
-      end
-
-      if !options[:limit]
-        data.max_by{|_, v| v}.first
-      else
-        data.sort_by{|_, v| -v}.first(options[:limit]).map{|k, v| {item: k, count: v}}
-      end
-    end
+    collection
   end
 end

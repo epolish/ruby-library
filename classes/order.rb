@@ -1,22 +1,21 @@
 [
+  'date'
+].each {|resource| require resource}
+[
   './resource/validator',
   './resource/application'
 ].each {|resource| require_relative resource}
-
-require 'date'
 
 class Order < Application
   include Validator
 
   attr_accessor :book, :reader, :date
 
-  def initialize(options={})
-    self.validate(
-      date_rule: options[:date] || Date.new
-    )
+  def initialize(book=nil, reader=nil, date=nil)
+    self.validate(date_rule: date || Date.new)
 
-    @book = options[:book]
-    @reader = options[:reader]
-    @date = options[:date]
+    @book = book
+    @reader = reader
+    @date = date
   end
 end

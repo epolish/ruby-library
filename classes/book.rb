@@ -5,8 +5,8 @@
 class Book < Application
   attr_accessor :title, :author
 
-  def initialize(options={})
-    @title = options[:title]
-    @author = options[:author]
+  def initialize(title=nil, author=nil)
+    @title = title
+    @author = author
   end
 end

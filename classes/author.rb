@@ -5,8 +5,8 @@
 class Author < Application
   attr_accessor :name, :biography
 
-  def initialize(options={})
-    @name = options[:name]
-    @biography = options[:biography] || []
+  def initialize(name=nil, biography=[])
+    @name = name
+    @biography = biography
   end
 end
